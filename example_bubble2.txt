@@ -1,0 +1,11 @@
+description	DEGnumber	factor	pvalue	FDR	group
+RNA transport	324	0.593406593	3.39E-09	1.24E-06	A
+mRNA surveillance pathway	246	0.602941176	3.94E-08	4.80E-06	A
+RNA degradation	225	0.558312655	2.21E-04	3.08E-03	A
+Spliceosome	258	0.544303797	6.70E-04	5.83E-03	B
+Purine metabolism	226	0.544578313	1.34E-03	1.00E-02	B
+Ribosome biogenesis in eukaryotes	122	0.59223301	2.83E-04	3.16E-03	B
+"Valine, leucine and isoleucine degradation"	64	0.581818182	1.23E-02	4.76E-02	B
+"Alanine, aspartate and glutamate metabolism"	67	0.592920354	5.90E-03	2.72E-02	B
+ABC transporters	122	0.564814815	3.27E-03	1.85E-02	C
+Nucleotide excision repair	92	0.58974359	1.79E-03	1.20E-02	C

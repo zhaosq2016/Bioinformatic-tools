@@ -18,9 +18,22 @@ server <- function(input, output, session){
     read.table(infile2$datapath,sep = "\t", head = T, row.names = 1)
   })
   
+  filedata3 <- reactive({
+    infile3 <- input$filename3
+    if (is.null(infile3)){
+      return(NULL)
+    }
+    read.table(infile3$datapath,sep = "\t", header = T)
+  })
+  
   observe({
     updateNumericInput(session, "bubbleheigh", value = 4)
     updateNumericInput(session, "bubblewidth", value = 10)
+  })
+  
+  observe({
+    updateNumericInput(session, "bubbleheigh2", value = 4)
+    updateNumericInput(session, "bubblewidth2", value = 6)
   })
   
   observe({
@@ -33,6 +46,8 @@ server <- function(input, output, session){
     updateNumericInput(session, "heatmapwidth", value = 10)
   })
   
+  ##################################
+  #bubble1
   bubble_plot <- function(){
     df <- filedata1()
     p <- ggplot(df,aes(len,PreLength))+
@@ -58,6 +73,46 @@ server <- function(input, output, session){
     }
   )
   
+  #######################################
+  #bubble2
+  bubble_plot2 <- function(){
+    df <- filedata3()
+    groups <- input$grouping
+    if (groups == "FALSE")
+      return(
+        p = ggplot(df,aes(factor,description)) +
+          geom_point(aes(size=DEGnumber,color=-1*log10(pvalue+0.00000001))) + 
+          scale_colour_gradient(low="green4",high="red") + 
+          labs(color=expression(-log10),size="Gene number",x="Factor",y="Term",title="Enrichment analysis")
+        
+      )
+    if (groups == "TRUE")
+      return(
+        p = ggplot(df,aes(group,description)) +
+          geom_point(aes(size=DEGnumber,color=-1*log10(pvalue+0.00000001))) + 
+          scale_colour_gradient(low="green4",high="red") + 
+          labs(color=expression(-log10),size="Gene number",x="Group",y="Term",title="Enrichment analysis")
+      )
+    p
+  }
+  
+  output$bubblechartplot2 <- renderPlot({
+    if (!is.null(filedata3())){
+      bubble_plot2()
+    }
+  })
+  
+  output$downloadbubble2 <- downloadHandler(
+    filename = function() { paste0("Bubblechart2", '.pdf') },
+    contentType = "image/pdf",
+    content = function(file) {
+      pdf(file, width = input$bubblewidth2, height = input$bubbleheigh2)
+      print(bubble_plot2())
+      dev.off()
+    }
+  )
+  #######################################################
+  #heatmap
   show_clusterrows <- reactive({
     clusterrowname <- input$clusterrows
     if (clusterrowname == "FALSE")
@@ -90,6 +145,14 @@ server <- function(input, output, session){
       return( TRUE )
   })
   
+  show_number <- reactive({
+    number <- input$displaynumber
+    if (number == "FALSE")
+      return( FALSE )
+    else
+      return( TRUE )
+  })
+  
   show_color <- reactive({
     colorname <- input$color
     if (colorname == "green yellow red")
@@ -100,13 +163,27 @@ server <- function(input, output, session){
   
   heatmap_plot <-function(){
     df <- filedata2()
-    pheatmap((df+0.0001), color = show_color(),
-             scale= input$scale,
-             cluster_rows = show_clusterrows(), cluster_cols = show_clustercols(),
-             cellwidth=input$cellwidth, cellheight= input$cellheight, 
-             show_rownames = show_rowname(), show_colnames = show_colname(),
-             clustering_method_rows = input$algorithm
-             )
+    colorname <- input$color
+    if (colorname == "default")
+      return(
+        pheatmap((df+0.0001), 
+                 scale= input$scale,
+                 cluster_rows = show_clusterrows(), cluster_cols = show_clustercols(),
+                 cellwidth=input$cellwidth, cellheight= input$cellheight, 
+                 show_rownames = show_rowname(), show_colnames = show_colname(), display_numbers=show_number(),
+                 clustering_method_rows = input$algorithm
+        )
+      )
+    else
+      return(
+        pheatmap((df+0.0001), color = show_color(),
+                 scale= input$scale,
+                 cluster_rows = show_clusterrows(), cluster_cols = show_clustercols(),
+                 cellwidth=input$cellwidth, cellheight= input$cellheight, 
+                 show_rownames = show_rowname(), show_colnames = show_colname(), display_numbers=show_number(),
+                 clustering_method_rows = input$algorithm
+        )
+      )
   }
   
   output$heatmapchartplot <- renderPlot({
