@@ -7,7 +7,9 @@ ui <- dashboardPage(
     sidebarMenu(
       menuItem("Bubble chart1", tabName = "bubbleplot1"),
       menuItem("Bubble chart2", tabName = "bubbleplot2"),
-      menuItem("Heatmap chart", tabName = "heatmapplot")
+      menuItem("Heatmap chart", tabName = "heatmapplot"),
+      menuItem("Scatterplot", tabName = "newscatterplot"),
+      menuItem("Volcano Plot", tabName = "volcano")
     )
   ),
   dashboardBody(
@@ -51,8 +53,6 @@ ui <- dashboardPage(
                 )
                 
               )
-        
-        
       ),
        tabItem("heatmapplot",
             fluidRow(
@@ -97,7 +97,54 @@ ui <- dashboardPage(
                    )
         )
       )
-    )
+    ),
+    tabItem("newscatterplot",
+            fluidRow(
+              column(width = 8,
+                     box(width = NULL,solidHeader = TRUE,
+                         title = "scatterplot chart for DEG",
+                         plotOutput("scatterplotchart", height = 500)
+                     )
+              ),
+            column(width = 4,
+                   box(width = NULL,status = "warning",
+                       fileInput("filename4","Choose File to Upload:", accept = c(".txt")),
+                       selectInput("tropic", label = "need tropic or not",
+                                   c("FALSE", "TRUE")),
+                       selectInput("contour", label = "contour select",
+                                   c("color1", "color2", "color3", "color4", "color5")),
+                       numericInput("scatterplotheigh",label = "Graph heigh value",value = 4),
+                       numericInput("scatterplotwidth",label = "Graph width value",value = 10),
+                       downloadButton("downloadscatterplot",label = "Download scatterplot plot")
+                   )
+            )
+         )
+    ),
+    tabItem("volcano",
+            fluidRow(
+              column(width = 8,
+                     box(width = NULL,solidHeader = TRUE,
+                       title = "Volcano chart for DEG",
+                       plotOutput("volcanochart", height = 500)
+                     )
+            ),
+            column(width = 4,
+                   box(width = NULL,status = "warning",
+                       fileInput("filename5","Choose File to Upload:", accept = c(".txt")),
+                       selectInput("colorDEG", label = "color select",
+                                   c("blue_black_red", "green_black_red")),
+                       selectInput("foldchange", label = "foldchange select",
+                                   c("2", "1.5")),
+                       selectInput("FDRselect", label = "FDR select",
+                                   c("0.001", "0.01", "0.05")),
+                       numericInput("volcanoheigh",label = "Graph heigh value",value = 10),
+                       numericInput("volcanowidth",label = "Graph width value",value = 10),
+                       downloadButton("downloadvolcanochart",label = "Download volcano chart")
+                   )
+            )
+          )
+        )
+    
   )
  )  
 )
